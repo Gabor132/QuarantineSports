@@ -1,2 +1,2 @@
 # QuarantineSports
-isual Analysis of Human Motion Project
+Visual Analysis of Human Motion Project
