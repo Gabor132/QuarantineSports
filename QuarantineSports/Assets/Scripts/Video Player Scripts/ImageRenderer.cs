@@ -19,19 +19,17 @@ namespace Video_Player_Scripts
 		// Texture to be rendered in image
 		private Texture2D texture;
 
-		private RectTransform rectTransform { get { return GetComponent<RectTransform>(); } }
 		private RawImage image { get { return GetComponent<RawImage>(); } }
 
 		public void UpdateImage(MultiArray<byte> data){
 			// data size: width * height * 3 (BGR)
 			if (data == null || data.Empty()) return;
 			int height = data.GetSize(0), width = data.GetSize(1);
-			
 			/* TRICK */
 			// Unity does not support BGR24 yet, which is the color format in OpenCV.
 			// Here we are using RGB24 as data format, then swap R and B in shader, to maintain the performance.
-			rectTransform.sizeDelta = new Vector2Int(width, height);
 			texture.Resize(width, height, TextureFormat.RGB24, false);
+			Debug.Log($"Resizing texture to {width}/{height}");
 			texture.LoadRawTextureData(data.ToArray());
 			texture.Apply();			
 		}
