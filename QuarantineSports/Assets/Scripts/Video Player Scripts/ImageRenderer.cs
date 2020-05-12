@@ -17,9 +17,9 @@ namespace Video_Player_Scripts
 		[SerializeField] Vector2Int screenSize;
 
 		// Texture to be rendered in image
-		private Texture2D texture;
+		private Texture2D _texture;
 
-		private RawImage image { get { return GetComponent<RawImage>(); } }
+		private RawImage Image { get { return GetComponent<RawImage>(); } }
 
 		public void UpdateImage(MultiArray<byte> data){
 			// data size: width * height * 3 (BGR)
@@ -28,10 +28,10 @@ namespace Video_Player_Scripts
 			/* TRICK */
 			// Unity does not support BGR24 yet, which is the color format in OpenCV.
 			// Here we are using RGB24 as data format, then swap R and B in shader, to maintain the performance.
-			texture.Resize(width, height, TextureFormat.RGB24, false);
+			_texture.Resize(width, height, TextureFormat.RGB24, false);
 			Debug.Log($"Resizing texture to {width}/{height}");
-			texture.LoadRawTextureData(data.ToArray());
-			texture.Apply();			
+			_texture.LoadRawTextureData(data.ToArray());
+			_texture.Apply();			
 		}
 
 		// Visual effect for image
@@ -40,20 +40,20 @@ namespace Video_Player_Scripts
 			else StartCoroutine(FadeCoroutine(Color.clear, duration));
 		}
 		private IEnumerator FadeCoroutine(Color goal, float duration){
-			Color current = image.color;
+			Color current = Image.color;
 			float t = 0f;
 			while (t < duration){
-				image.color = Color.Lerp(current, goal, t / duration);
+				Image.color = Color.Lerp(current, goal, t / duration);
 				t += Time.deltaTime;
 				yield return null;
 			}
-			image.color = goal;
+			Image.color = goal;
 		}
 
 		// Use this for initialization
 		void Start () {
-			texture = new Texture2D(screenSize.x, screenSize.y);
-			image.texture = texture;
+			_texture = new Texture2D(screenSize.x, screenSize.y);
+			Image.texture = _texture;
 		}
 	}
 }
