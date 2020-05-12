@@ -12,11 +12,11 @@ Visual Analysis of Human Motion Project
   c. Run getModels.bat</br>
   d. Check if the Demo.unity scene works</br>
   e. Export the unity project as a package</br>
-4. Import the OpenPose package into the project, only the following directories are necessare:
-  a. StreamingAssets/*
-  b. Examples/Scripts/ImageRenderer
-  c. Modules/Scripts/*
-  d. Plugins/*
+4. Import the OpenPose package into the project, only the following directories are necessare:</br>
+  a. StreamingAssets/*</br>
+  b. OpenPose/Examples/Scripts/ImageRenderer</br>
+  c. OpenPose/Modules/Scripts/*</br>
+  d. OpenPose/Plugins/*</br>
 5. TextMesh Pro should be automatically imported by Unity, it will ask you. (or not, I just changed everything to use the normal unity assets...)</br>
 6. Download NuGet .unitypackage from <a href="https://github.com/GlitchEnzo/NuGetForUnity/releases">Link</a> and import the package in the project
 7. Restart the Unity Editor
