@@ -23,3 +23,9 @@ Visual Analysis of Human Motion Project
 8. Use NuGet (it will have a tab now in the editor) to import Newtonsoft.Json
 9. Everything should work now.
 10. If not, oh god.
+
+
+
+# Querky Remarks
+Note to self and others: When adding a unity package, make sure the IDE or you don't add unnecessary and huge files in the commit. I learned it the hard way.
+*angry looking at the OpenPose package*
