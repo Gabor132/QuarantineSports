@@ -21,6 +21,7 @@ Visual Analysis of Human Motion Project
 6. Download NuGet .unitypackage from <a href="https://github.com/GlitchEnzo/NuGetForUnity/releases">Link</a> and import the package in the project
 7. Restart the Unity Editor
 8. Use NuGet (it will have a tab now in the editor) to import Newtonsoft.Json
+9. Add the "Runtime File Browser" Asset into the project from this <a href="https://assetstore.unity.com/packages/tools/gui/runtime-file-browser-113006?_ga=2.235669572.49896998.1589205276-45063290.1585392890">link</a></br>
 9. Everything should work now.
 10. If not, oh god.
 
