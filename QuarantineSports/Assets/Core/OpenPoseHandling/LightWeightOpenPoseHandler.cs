@@ -1,14 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using Core.DatasetObjects;
 using Newtonsoft.Json;
 using OpenPose;
-using OpenPose.Example;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Video_Player_Scripts;
 using Formatting = Newtonsoft.Json.Formatting;
 using RenderMode = OpenPose.RenderMode;
 using ScaleMode = OpenPose.ScaleMode;
