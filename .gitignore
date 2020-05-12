@@ -70,3 +70,17 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /QuarantineSports/Library
 /QuarantineSports/build
+/QuarantineSports/.idea
+/QuarantineSports/obj
+/QuarantineSports/Assets/StreamingAssets
+/QuarantineSports/Assets/Plugins
+/QuarantineSports/Packages/Microsoft.Bcl.AsyncInterfaces.1.1.0
+/QuarantineSports/Packages/System.Buffers.4.5.0
+/QuarantineSports/Packages/System.Memory.4.5.3
+/QuarantineSports/Packages/System.Numerics.Vectors.4.5.0
+/QuarantineSports/Packages/System.Runtime.CompilerServices.Unsafe.5.0.0-preview.3.20214.6
+/QuarantineSports/Packages/System.Text.Encodings.Web.5.0.0-preview.3.20214.6
+/QuarantineSports/Packages/System.Threading.Tasks.Extensions.4.5.2
+/QuarantineSports/Packages/System.ValueTuple.4.5.0
+/QuarantineSports/Assets/OpenPose
+/QuarantineSports/Assets/NuGet
