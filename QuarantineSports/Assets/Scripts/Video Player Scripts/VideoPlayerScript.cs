@@ -40,8 +40,6 @@ namespace Video_Player_Scripts
         private string _videoPath;
         private string _outputPath;
 
-        private bool _applyOpenPose = false;
-        
         /*
          * Unity Components
          */
@@ -67,7 +65,6 @@ namespace Video_Player_Scripts
         /*
          * Auxiliar Variables
          */
-        private readonly Regex _currentVideoTimeRegex = new Regex(@"(([0-5]|)[0-9]:([0-5]|)[0-9])");
         private Sequence _currentSequence;
         private string _defaultSequenceTextFormat = "Current Sequence: {0}: {1} -> {2}: {3}";
         private string _defaultSequenceTextEmpty = "No current sequence";
@@ -127,9 +124,9 @@ namespace Video_Player_Scripts
                 bool videoWasPlaying = _videoPlayer.isPlaying;
                 PausePlaying();
                 float sliderValue = videoSlider.value;
-                _videoPlayer.time = sliderValue;
-                currentVideoTime.text = TimeSpan.FromSeconds(sliderValue).ToString(@"mm\:ss");
-                UpdateCurrentSequence(sliderValue);
+                _videoPlayer.frame = (long) sliderValue;
+                currentVideoTime.text = sliderValue.ToString();
+                UpdateCurrentSequence((long) sliderValue);
                 UpdateTexture();
                 if (videoWasPlaying)
                 {
@@ -143,19 +140,12 @@ namespace Video_Player_Scripts
             {
                 bool videoWasPlaying = _videoPlayer.isPlaying;
                 PausePlaying();
-                string newTime = currentVideoTime.text;
-                if (_currentVideoTimeRegex.IsMatch(newTime))
-                {
-                    string[] splitResult = newTime.Split(':');
-                    Debug.Log("Setting the video at minute: " + splitResult[0] + " and seconds: " + splitResult[1]);
-                    TimeSpan desiredTimespan = new TimeSpan(0,0,int.Parse(splitResult[0]), int.Parse(splitResult[1]));
-                    double desiredSecond = desiredTimespan.Seconds + desiredTimespan.Minutes * 60;
-                    _videoPlayer.time = desiredSecond;
-                    videoSlider.value = (float) desiredSecond;
-                    currentVideoTime.text = TimeSpan.FromSeconds(desiredSecond).ToString(@"mm\:ss");
-                    UpdateCurrentSequence(desiredSecond);
-                    UpdateTexture();
-                }
+                int newFrame = int.Parse(currentVideoTime.text);
+                Debug.Log($"Setting the video at frame: {newFrame}");
+                _videoPlayer.frame = newFrame;
+                videoSlider.value = newFrame;
+                UpdateCurrentSequence(newFrame);
+                UpdateTexture();
                 if (videoWasPlaying)
                 {
                     StartPlaying();
@@ -199,17 +189,18 @@ namespace Video_Player_Scripts
                 pauseButton.SetActive(false);
             
                 // Setup Slider
-                double lengthOfVideo = _videoPlayer.length;
-                Debug.Log("Length of video: " + lengthOfVideo);
-                videoSlider.maxValue = (float) lengthOfVideo;
+                double lengthOfVideoInFrames = Math.Floor((float) _videoPlayer.length * _videoPlayer.frameRate);
+                Debug.Log("Length of video: " + lengthOfVideoInFrames);
+                videoSlider.wholeNumbers = true;
+                videoSlider.maxValue = (float) lengthOfVideoInFrames;
                 videoSlider.minValue = 0f;
 
                 // Setup CurrentVideoTime
-                currentVideoTime.text = TimeSpan.FromSeconds(0).ToString(@"mm\:ss");
+                currentVideoTime.text = "0";
                 
                 
                 // Setup TotalVideoTime
-                totalVideoTime.text = TimeSpan.FromSeconds(lengthOfVideo).ToString(@"mm\:ss");
+                totalVideoTime.text = lengthOfVideoInFrames.ToString();
                 
                 // Setup Sequence buttons
                 startSequenceButton.interactable = true;
@@ -238,23 +229,23 @@ namespace Video_Player_Scripts
             if (_videoPlayer.isPrepared && _videoPlayer.isPlaying)
             {
                 UpdateTexture();
-                var time = _videoPlayer.time;
-                videoSlider.value = (float) time;
-                UpdateCurrentSequence(time);
-                currentVideoTime.text = TimeSpan.FromSeconds(_videoPlayer.time).ToString(@"mm\:ss");
+                long newFrame = _videoPlayer.frame;
+                videoSlider.value = newFrame;
+                UpdateCurrentSequence(newFrame);
+                currentVideoTime.text = _videoPlayer.frame.ToString();
             }
         }
         void UpdateTexture()
         {
             image.texture = _videoPlayer.texture;
         }
-        void UpdateCurrentSequence(double time)
+        void UpdateCurrentSequence(long newFrame)
         {
-            if (_currentSequence != null && _currentSequence.StartTime <= time)
+            if (_currentSequence != null && _currentSequence.StartFrame <= newFrame)
             {
-                _currentSequence.EndTime = time;
-                sequenceCurrentText.text = string.Format(_defaultSequenceTextFormat, _currentSequence.Id, TimeSpan.FromSeconds(_currentSequence.StartTime).ToString(@"mm\:ss"),
-                    TimeSpan.FromSeconds(_currentSequence.EndTime).ToString(@"mm\:ss"), _currentSequence.IsCorrect ? "Correct" : "Wrong");
+                _currentSequence.EndFrame = newFrame;
+                sequenceCurrentText.text = string.Format(_defaultSequenceTextFormat, _currentSequence.Id, _currentSequence.StartFrame,
+                    _currentSequence.EndFrame, _currentSequence.IsCorrect ? "Correct" : "Wrong");
             }
             else
             {
@@ -274,8 +265,8 @@ namespace Video_Player_Scripts
                 return;
             }
 
-            var time = _videoPlayer.time;
-            Sequence newSequence = new Sequence(time);
+            long newFrame = _videoPlayer.frame;
+            Sequence newSequence = new Sequence(newFrame);
             _currentSequence = newSequence;
             
             // Setup buttons
@@ -288,7 +279,7 @@ namespace Video_Player_Scripts
             // Setup Dropdown
             sequencesDropdown.interactable = false;
             
-            UpdateCurrentSequence(time);
+            UpdateCurrentSequence(newFrame);
         }
         public void SetSequence(bool isCorrect)
         {
@@ -304,7 +295,7 @@ namespace Video_Player_Scripts
             correctSequenceButton.interactable = ! isCorrect;
             wrongSequenceButton.interactable = isCorrect;
             
-            UpdateCurrentSequence(_videoPlayer.time);
+            UpdateCurrentSequence(_videoPlayer.frame);
         }
         public void SaveSequence()
         {
@@ -343,7 +334,7 @@ namespace Video_Player_Scripts
             // Set dropdown to None
             sequencesDropdown.value = 0;
             
-            UpdateCurrentSequence(_videoPlayer.time);
+            UpdateCurrentSequence(_videoPlayer.frame);
         }
         public void DeleteSequence()
         {
@@ -372,7 +363,7 @@ namespace Video_Player_Scripts
             // Set dropdown to None
             sequencesDropdown.value = 0;
             
-            UpdateCurrentSequence(_videoPlayer.time);
+            UpdateCurrentSequence(_videoPlayer.frame);
         }
         public void SelectSequence()
         {
@@ -405,9 +396,9 @@ namespace Video_Player_Scripts
                 }
                 
                 // Set Video player to ending of sequence
-                _videoPlayer.time = _currentSequence.EndTime;
-                videoSlider.value = (float) _currentSequence.EndTime;
-                currentVideoTime.text = TimeSpan.FromSeconds(_currentSequence.EndTime).ToString(@"mm\:ss");
+                _videoPlayer.frame = _currentSequence.EndFrame;
+                videoSlider.value = (float) _currentSequence.EndFrame;
+                currentVideoTime.text = _currentSequence.EndFrame.ToString();
                 
                 // Setup buttons
                 startSequenceButton.interactable = false;
@@ -417,8 +408,8 @@ namespace Video_Player_Scripts
                 discardSequenceButton.interactable = true;
                 
                 // Set Current Sequence Text
-                sequenceCurrentText.text = string.Format(_defaultSequenceTextFormat, _currentSequence.Id, TimeSpan.FromSeconds(_currentSequence.StartTime).ToString(@"mm\:ss"),
-                    TimeSpan.FromSeconds(_currentSequence.EndTime).ToString(@"mm\:ss"), _currentSequence.IsCorrect ? "Correct" : "Wrong");
+                sequenceCurrentText.text = string.Format(_defaultSequenceTextFormat, _currentSequence.Id, _currentSequence.StartFrame,
+                    _currentSequence.EndFrame, _currentSequence.IsCorrect ? "Correct" : "Wrong");
             }
             else
             {
@@ -440,8 +431,8 @@ namespace Video_Player_Scripts
         }
         public class Sequence
         {
-            public double StartTime { get; set; }
-            public double EndTime { get; set; }
+            public long StartFrame { get; set; }
+            public long EndFrame { get; set; }
             public bool IsCorrect { get; set; }
 
             public int Id { get; set; }
@@ -450,16 +441,16 @@ namespace Video_Player_Scripts
 
             public Sequence()
             {
-                StartTime = 0;
-                EndTime = 0;
+                StartFrame = 0;
+                EndFrame = 0;
                 Id = NextId;
                 NextId++;
             }
             
-            public Sequence(double start)
+            public Sequence(long startFrame)
             {
-                StartTime = start;
-                EndTime = start;
+                StartFrame = startFrame;
+                EndFrame = startFrame;
                 Id = NextId;
                 NextId++;
             }
@@ -498,8 +489,8 @@ namespace Video_Player_Scripts
             foreach(Sequence sequence in _sequences)
             {
                 List<byte[]> frames = new List<byte[]>();
-                long startFrame = (long) (Math.Floor(sequence.StartTime) * frameRate);
-                long endFrame = (long) (Math.Ceiling(sequence.EndTime) * frameRate);
+                long startFrame = sequence.StartFrame;
+                long endFrame = sequence.EndFrame;
                 Debug.Log("Extracting textures between: " 
                           + startFrame
                           + " and " 

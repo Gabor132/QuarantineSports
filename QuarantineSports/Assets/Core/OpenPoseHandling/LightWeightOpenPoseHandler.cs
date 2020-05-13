@@ -181,13 +181,12 @@ namespace Core.OpenPoseHandling
         {
             string path = _currentData.GetPath() + "\\data.json";
             Debug.Log($"Writing OpenPose Keypoints to json file at {path}");
-            using (FileStream file = new FileStream(path, FileMode.OpenOrCreate))
+            using (StreamWriter file = File.CreateText(path))
             {
-                JsonWriter writer = new JsonTextWriter(new StreamWriter(file));
-                writer.Formatting = Formatting.Indented;
-                string jsonOutput = JsonConvert.SerializeObject(_output);
-                Debug.Log($"JSON output is {jsonOutput}");
-                _jsonSerializer.Serialize(writer, jsonOutput);
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Formatting = Formatting.Indented;
+                //serialize object directly into file stream
+                serializer.Serialize(file, _output);
             }
             _output.Clear();
             if (inputDataset.Data.Count > 0)
