@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Core.DatasetObjects;
 using Core.OpenPoseHandling;
+using OpenPose;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -61,6 +62,7 @@ namespace Video_Player_Scripts
         
         public Dropdown sequencesDropdown;
         public Text sequenceCurrentText;
+        public Toggle exportPosePictureToggle;
         
         /*
          * Auxiliar Variables
@@ -525,7 +527,12 @@ namespace Video_Player_Scripts
             dataset.SaveDataset();
             LightWeightOpenPoseHandler handler = exportMenu.GetComponent<LightWeightOpenPoseHandler>();
             handler.inputDataset = dataset;
+            handler.ExportPosePicture = exportPosePictureToggle.isOn;
             exportMenu.SetActive(true);
+            if (handler.stateText.text.Equals(OPState.Ready.ToString()))
+            {
+                handler.ApplyChanges();
+            }
             gameObject.SetActive(false);
 
         }

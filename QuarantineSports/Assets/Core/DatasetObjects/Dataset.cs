@@ -12,7 +12,6 @@ namespace Core.DatasetObjects
         {
             OutputPath = outputPath;
             string[] pathParts = inputPath.Split('\\');
-            Debug.Log(pathParts);
             VideoName = pathParts[pathParts.Length - 1].Split('.')[0];
             Data = new List<Data>();
         }
@@ -40,7 +39,7 @@ namespace Core.DatasetObjects
             
             Debug.Log($"Creating folder {folderPath}");
             System.IO.Directory.CreateDirectory(OutputPath);
-            
+
             Debug.Log(string.Format("Saving dataset {0} to: {1}", VideoName, OutputPath+VideoName));
             for (int index = 0; index < Data.Count; index++)
             {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using UnityEngine;
 
 namespace Core.DatasetObjects
@@ -25,12 +25,14 @@ namespace Core.DatasetObjects
         {
             string sequenceFolderPath = $"{_outputPath}\\{_datasetName}\\{_sequenceIndex}";
             Debug.Log($"Create directory for sequence at {sequenceFolderPath}");
-            System.IO.Directory.CreateDirectory(sequenceFolderPath);
+            Directory.CreateDirectory(sequenceFolderPath);
+            string pathCategoryFile = sequenceFolderPath + "\\category.txt";
+            File.WriteAllText(pathCategoryFile, Category.ToString());
             for (int frameIndex = 0; frameIndex < Frames.Length; frameIndex++)
             {
                 string savePath =
                     $"{sequenceFolderPath}\\{_datasetName}_sequence{_sequenceIndex}_frame{frameIndex}.png";
-                System.IO.File.WriteAllBytes(savePath, Frames[frameIndex]);
+                File.WriteAllBytes(savePath, Frames[frameIndex]);
                 Debug.Log(Frames[frameIndex].Length/1024 + "Kb saved as: " + savePath);
             }
         }

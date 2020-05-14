@@ -34,6 +34,8 @@ namespace Core.OpenPoseHandling
 
         public Dataset inputDataset;
         
+        public bool ExportPosePicture = false;
+        
         private Data _currentData;
         
         public int maxPeople = -1;
@@ -51,7 +53,7 @@ namespace Core.OpenPoseHandling
         }
         
         
-        public void StartOpenPose() {
+        private void Start() {
 
             _output = new List<OutputKeypoints>();
             
@@ -77,32 +79,60 @@ namespace Core.OpenPoseHandling
             
             // Configuring OpenPose to handle images
             OPWrapper.OPConfigurePose(
-                /* poseMode */ PoseMode.Enabled, /* netInputSize */ netResolution, /* outputSize */ null,
-                /* keypointScaleMode */ ScaleMode.InputResolution,
-                /* gpuNumber */ -1, /* gpuNumberStart */ 0, /* scalesNumber */ 1, /* scaleGap */ 0.25f,
-                /* renderMode */ RenderMode.Auto, /* poseModel */ PoseModel.BODY_25,
-                /* blendOriginalFrame */ true, /* alphaKeypoint */ 0.6f, /* alphaHeatMap */ 0.7f,
-                /* defaultPartToRender */ 0, /* modelFolder */ null,
-                /* heatMapTypes */ HeatMapType.None, /* heatMapScaleMode */ ScaleMode.ZeroToOne,
-                /* addPartCandidates */ false, /* renderThreshold */ renderThreshold, /* numberPeopleMax */ maxPeople,
-                /* maximizePositives */ false, /* fpsMax fps_max */ -1.0,
-                /* protoTxtPath */ "", /* caffeModelPath */ "", /* upsamplingRatio */ 0f);
+                /* poseMode */ PoseMode.Enabled,
+                /* netInputSize */ netResolution,
+                /* outputSize */ null,
+                /* keypointScaleMode */ ScaleMode.ZeroToOne,
+                /* gpuNumber */ -1,
+                /* gpuNumberStart */ 0,
+                /* scalesNumber */ 1,
+                /* scaleGap */ 0.25f,
+                /* renderMode */ RenderMode.Auto,
+                /* poseModel */ PoseModel.BODY_25,
+                /* blendOriginalFrame */ true,
+                /* alphaKeypoint */ 0.6f,
+                /* alphaHeatMap */ 0.7f,
+                /* defaultPartToRender */ 0,
+                /* modelFolder */ null,
+                /* heatMapTypes */ HeatMapType.None,
+                /* heatMapScaleMode */ ScaleMode.ZeroToOne,
+                /* addPartCandidates */ false,
+                /* renderThreshold */ renderThreshold,
+                /* numberPeopleMax */ maxPeople,
+                /* maximizePositives */ false,
+                /* fpsMax fps_max */ -1.0,
+                /* protoTxtPath */ "",
+                /* caffeModelPath */ "",
+                /* upsamplingRatio */ 0f);
 
             // Configure OpenPose to not handle hands
             OPWrapper.OPConfigureHand(
-                /* enable */ false, /* detector */ Detector.Body, /* netInputSize */ handResolution,
-                /* scalesNumber */ 1, /* scaleRange */ 0.4f, /* renderMode */ RenderMode.Auto,
-                /* alphaKeypoint */ 0.6f, /* alphaHeatMap */ 0.7f, /* renderThreshold */ 0.2f);
+                /* enable */ false,
+                /* detector */ Detector.Body,
+                /* netInputSize */ handResolution,
+                /* scalesNumber */ 1,
+                /* scaleRange */ 0.4f,
+                /* renderMode */ RenderMode.Auto,
+                /* alphaKeypoint */ 0.6f,
+                /* alphaHeatMap */ 0.7f,
+                /* renderThreshold */ 0.2f);
 
             // Configure OpenPose to not handle faces
             OPWrapper.OPConfigureFace(
-                /* enable */ false, /* detector */ Detector.Body, 
-                /* netInputSize */ faceResolution, /* renderMode */ RenderMode.Auto,
-                /* alphaKeypoint */ 0.6f, /* alphaHeatMap */ 0.7f, /* renderThreshold */ 0.4f);
+                /* enable */ false,
+                /* detector */ Detector.Body, 
+                /* netInputSize */ faceResolution,
+                /* renderMode */ RenderMode.Auto,
+                /* alphaKeypoint */ 0.6f,
+                /* alphaHeatMap */ 0.7f,
+                /* renderThreshold */ 0.4f);
 
             // Configure if OpenPose should do 3D reconstruction
             OPWrapper.OPConfigureExtra(
-                /* reconstruct3d */ false, /* minViews3d */ -1, /* identification */ false, /* tracking */ -1,
+                /* reconstruct3d */ false,
+                /* minViews3d */ -1,
+                /* identification */ false,
+                /* tracking */ -1,
                 /* ikThreads */ 0);
 
             if (inputDataset != null)
@@ -120,27 +150,51 @@ namespace Core.OpenPoseHandling
             }
             // Configure OpenPose input type
             OPWrapper.OPConfigureInput(
-                /* producerType */ ProducerType.ImageDirectory, /* producerString */ _currentData.GetPath(),
-                /* frameFirst */ 0, /* frameStep */ 1, /* frameLast */ ulong.MaxValue,
-                /* realTimeProcessing */ false, /* frameFlip */ false,
-                /* frameRotate */ 0, /* framesRepeat */ false,
-                /* cameraResolution */ null, /* cameraParameterPath */ null,
-                /* undistortImage */ false, /* numberViews */ -1);
+                /* producerType */ ProducerType.ImageDirectory,
+                /* producerString */ _currentData.GetPath(),
+                /* frameFirst */ 0,
+                /* frameStep */ 1,
+                /* frameLast */ ulong.MaxValue,
+                /* realTimeProcessing */ false,
+                /* frameFlip */ false,
+                /* frameRotate */ 0,
+                /* framesRepeat */ false,
+                /* cameraResolution */ null,
+                /* cameraParameterPath */ null,
+                /* undistortImage */ false,
+                /* numberViews */ -1);
 
             // Configure OpenPose output type
             OPWrapper.OPConfigureOutput(
-                /* verbose */ -1.0, /* writeKeypoint */ "", /* writeKeypointFormat */ DataFormat.Json,
-                /* writeJson */ "", /* writeCocoJson */ "", /* writeCocoJsonVariants */ 1,
-                /* writeCocoJsonVariant */ 1, /* writeImages */ "", /* writeImagesFormat */ "png",
-                /* writeVideo */ "", /* writeVideoFps */ -1.0, /* writeVideoWithAudio */ false,
-                /* writeHeatMaps */ "", /* writeHeatMapsFormat */ "png", /* writeVideo3D */ "",
-                /* writeVideoAdam */ "", /* writeBvh */ "", /* udpHost */ "", /* udpPort */ "8051");
+                /* verbose */ -1.0,
+                /* writeKeypoint */ _currentData.GetPath(),
+                /* writeKeypointFormat */ DataFormat.Json,
+                /* writeJson */  "",
+                /* writeCocoJson */ "",
+                /* writeCocoJsonVariants */ 1,
+                /* writeCocoJsonVariant */ 1,
+                /* writeImages */ ExportPosePicture ? _currentData.GetPath() : "",
+                /* writeImagesFormat */ "png",
+                /* writeVideo */ "",
+                /* writeVideoFps */ -1.0,
+                /* writeVideoWithAudio */ false,
+                /* writeHeatMaps */ "",
+                /* writeHeatMapsFormat */ "png",
+                /* writeVideo3D */ "",
+                /* writeVideoAdam */ "",
+                /* writeBvh */ "",
+                /* udpHost */ "",
+                /* udpPort */ "8051");
 
             OPWrapper.OPConfigureGui(
-                /* displayMode */ DisplayMode.NoDisplay, /* guiVerbose */ false, /* fullScreen */ false);
+                /* displayMode */ DisplayMode.NoDisplay,
+                /* guiVerbose */ false,
+                /* fullScreen */ false);
             
             OPWrapper.OPConfigureDebugging(
-                /* loggingLevel */ Priority.High, /* disableMultiThread */ false, /* profileSpeed */ 1000);
+                /* loggingLevel */ Priority.High,
+                /* disableMultiThread */ false,
+                /* profileSpeed */ 1000);
         }
 
         private IEnumerator UserRebootOpenPoseCoroutine() {
@@ -155,6 +209,7 @@ namespace Core.OpenPoseHandling
             // Configure and start
             UserConfigureOpenPose();
             OPWrapper.OPRun();
+            
         }
 
         private void Update() {
@@ -171,25 +226,7 @@ namespace Core.OpenPoseHandling
                 
             }
 
-            if (OPWrapper.state == OPState.Ready && _output.Count > 0)
-            {
-                SaveOutput();
-            }
-        }
-
-        private void SaveOutput()
-        {
-            string path = _currentData.GetPath() + "\\data.json";
-            Debug.Log($"Writing OpenPose Keypoints to json file at {path}");
-            using (StreamWriter file = File.CreateText(path))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                //serialize object directly into file stream
-                serializer.Serialize(file, _output);
-            }
-            _output.Clear();
-            if (inputDataset.Data.Count > 0)
+            if (OPWrapper.state == OPState.Ready && inputDataset.Data.Count > 0)
             {
                 ApplyChanges();
             }
