@@ -29,7 +29,6 @@ namespace Video_Player_Scripts
 			// Unity does not support BGR24 yet, which is the color format in OpenCV.
 			// Here we are using RGB24 as data format, then swap R and B in shader, to maintain the performance.
 			_texture.Resize(width, height, TextureFormat.RGB24, false);
-			Debug.Log($"Resizing texture to {width}/{height}");
 			_texture.LoadRawTextureData(data.ToArray());
 			_texture.Apply();			
 		}

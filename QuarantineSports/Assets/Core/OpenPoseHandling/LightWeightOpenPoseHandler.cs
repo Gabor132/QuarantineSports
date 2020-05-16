@@ -4,6 +4,7 @@ using System.IO;
 using Core.DatasetObjects;
 using Newtonsoft.Json;
 using OpenPose;
+using OpenPose.Modules.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 using Video_Player_Scripts;
@@ -23,23 +24,30 @@ namespace Core.OpenPoseHandling
         // UI elements
         public Text stateText;
 
-        // Output
+        // OpenPose Datum
         private OPDatum _datum;
-
-        private List<OutputKeypoints> _output = new List<OutputKeypoints>();
-
+        
+        // Image Output
         public ImageRenderer image;
 
-        private JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault();
+        // Video Specific Input
+        public string videoInputPath;
+        public List<VideoPlayerScript.Sequence> sequences;
+        public long lengthOfVideoInFrames;
+        public string outputPath;
+        public bool exportPosePicture = false;
+        
+        // Auxiliar Variables
+        private string _videoName;
+        private VideoPlayerScript.Sequence _currentSequence;
+        
+        // Frames that will be exported in JSON
+        private List<Frame> _output = new List<Frame>();
 
-        public Dataset inputDataset;
-        
-        public bool ExportPosePicture = false;
-        
-        private Data _currentData;
-        
-        public int maxPeople = -1;
+        // OpenPose variables
+        public int maxPeople = 1;
         public float renderThreshold = 0.05f;
+
         public Vector2Int
             netResolution = new Vector2Int(-1, 368),
             handResolution = new Vector2Int(368, 368),
@@ -55,7 +63,20 @@ namespace Core.OpenPoseHandling
         
         private void Start() {
 
-            _output = new List<OutputKeypoints>();
+            _output = new List<Frame>();
+            
+            // Extract Video name for exporting
+            string[] splitResult = videoInputPath.Split('\\');
+            splitResult = splitResult[splitResult.Length - 1].Split('.');
+            _videoName = splitResult[0];
+            
+            
+            sequences.Sort((sequence, sequence1) => (int) (sequence.StartFrame - sequence1.StartFrame));
+            if (sequences.Count > 0)
+            {
+                _currentSequence = sequences[0];
+                sequences.Remove(_currentSequence);
+            }
             
             // Register callbacks
             OPWrapper.OPRegisterCallbacks();
@@ -106,6 +127,7 @@ namespace Core.OpenPoseHandling
                 /* upsamplingRatio */ 0f);
 
             // Configure OpenPose to not handle hands
+            
             OPWrapper.OPConfigureHand(
                 /* enable */ false,
                 /* detector */ Detector.Body,
@@ -116,8 +138,8 @@ namespace Core.OpenPoseHandling
                 /* alphaKeypoint */ 0.6f,
                 /* alphaHeatMap */ 0.7f,
                 /* renderThreshold */ 0.2f);
-
-            // Configure OpenPose to not handle faces
+            
+            //Configure OpenPose to not handle faces
             OPWrapper.OPConfigureFace(
                 /* enable */ false,
                 /* detector */ Detector.Body, 
@@ -126,7 +148,7 @@ namespace Core.OpenPoseHandling
                 /* alphaKeypoint */ 0.6f,
                 /* alphaHeatMap */ 0.7f,
                 /* renderThreshold */ 0.4f);
-
+            
             // Configure if OpenPose should do 3D reconstruction
             OPWrapper.OPConfigureExtra(
                 /* reconstruct3d */ false,
@@ -135,23 +157,10 @@ namespace Core.OpenPoseHandling
                 /* tracking */ -1,
                 /* ikThreads */ 0);
 
-            if (inputDataset != null)
-            {
-                if (inputDataset.Data.Count > 0)
-                {
-                    _currentData = inputDataset.Data[0];
-                    inputDataset.Data.Remove(_currentData);
-                    Debug.Log($"Input paths that have been found: {_currentData.GetPath()}");
-                }
-                else
-                {
-                    Debug.Log("No actual input path found");
-                }
-            }
             // Configure OpenPose input type
             OPWrapper.OPConfigureInput(
-                /* producerType */ ProducerType.ImageDirectory,
-                /* producerString */ _currentData.GetPath(),
+                /* producerType */ ProducerType.Video,
+                /* producerString */ videoInputPath,
                 /* frameFirst */ 0,
                 /* frameStep */ 1,
                 /* frameLast */ ulong.MaxValue,
@@ -167,15 +176,15 @@ namespace Core.OpenPoseHandling
             // Configure OpenPose output type
             OPWrapper.OPConfigureOutput(
                 /* verbose */ -1.0,
-                /* writeKeypoint */ _currentData.GetPath(),
+                /* writeKeypoint */ "",
                 /* writeKeypointFormat */ DataFormat.Json,
                 /* writeJson */  "",
                 /* writeCocoJson */ "",
                 /* writeCocoJsonVariants */ 1,
                 /* writeCocoJsonVariant */ 1,
-                /* writeImages */ ExportPosePicture ? _currentData.GetPath() : "",
+                /* writeImages */ "",
                 /* writeImagesFormat */ "png",
-                /* writeVideo */ "",
+                /* writeVideo */ exportPosePicture ? outputPath + "\\" + _videoName + ".avi" : "",
                 /* writeVideoFps */ -1.0,
                 /* writeVideoWithAudio */ false,
                 /* writeHeatMaps */ "",
@@ -216,21 +225,60 @@ namespace Core.OpenPoseHandling
             // Update state in UI
             stateText.text = OPWrapper.state.ToString();
 
+            long currentFrame = (long) _datum.frameNumber;
+            if (_currentSequence != null)
+            {
+                if (currentFrame > _currentSequence.EndFrame)
+                {
+                    if (sequences.Count > 0)
+                    {
+                        _currentSequence = sequences[0];
+                        sequences.Remove(_currentSequence);
+                    }
+                    else
+                    {
+                        _currentSequence = null;
+                    }
+                }
+            }
+            
             // Try getting new frame
             if (OPWrapper.OPGetOutput(out _datum)){ // true: has new frame data
                 
                 image.UpdateImage(_datum.cvInputData);
-
-                OutputKeypoints keypoints = new OutputKeypoints(_datum, _currentData.Category);
-                _output.Add(keypoints);
-                
-            }
-
-            if (OPWrapper.state == OPState.Ready && inputDataset.Data.Count > 0)
-            {
-                ApplyChanges();
+                int category = 0;
+                if (_currentSequence != null && currentFrame >= _currentSequence.StartFrame && currentFrame <= _currentSequence.EndFrame)
+                {
+                    category = _currentSequence.IsCorrect ? 1 : 0;
+                }
+                _output.Add(new Frame(_datum.poseKeypoints, category));
+                if (_datum.poseKeypoints != null)
+                {
+                    if (! dimensions.ContainsKey(_datum.poseKeypoints.Count))
+                    {
+                        dimensions.Add(_datum.poseKeypoints.Count, currentFrame);
+                    }
+                }
             }
         }
 
+        public Dictionary<int, long> dimensions = new Dictionary<int, long>();
+
+        public void SaveOutput()
+        {
+            Debug.Log("Saving output as JSON");
+            string output = JsonConvert.SerializeObject(_output, Formatting.Indented);
+            File.WriteAllText(outputPath+ $"\\{_videoName}.json", output);
+            foreach (int i in dimensions.Keys)
+            {
+                Debug.Log($"Dimension: {i} -> Frame {dimensions[i]}");
+            }
+        }
+
+        public void Stop()
+        {
+            SaveOutput();
+            OPWrapper.OPShutdown();
+        }
     }
 }

@@ -62,7 +62,7 @@ namespace Video_Player_Scripts
         
         public Dropdown sequencesDropdown;
         public Text sequenceCurrentText;
-        public Toggle exportPosePictureToggle;
+        public Toggle exportOutputAsContent;
         
         /*
          * Auxiliar Variables
@@ -70,6 +70,7 @@ namespace Video_Player_Scripts
         private Sequence _currentSequence;
         private string _defaultSequenceTextFormat = "Current Sequence: {0}: {1} -> {2}: {3}";
         private string _defaultSequenceTextEmpty = "No current sequence";
+        private double _lengthOfVideoInFrames;
 
         /*
          * Annotation Sequences
@@ -191,10 +192,10 @@ namespace Video_Player_Scripts
                 pauseButton.SetActive(false);
             
                 // Setup Slider
-                double lengthOfVideoInFrames = Math.Floor((float) _videoPlayer.length * _videoPlayer.frameRate);
-                Debug.Log("Length of video: " + lengthOfVideoInFrames);
+                _lengthOfVideoInFrames = Math.Floor((float) _videoPlayer.length * _videoPlayer.frameRate);
+                Debug.Log("Length of video: " + _lengthOfVideoInFrames);
                 videoSlider.wholeNumbers = true;
-                videoSlider.maxValue = (float) lengthOfVideoInFrames;
+                videoSlider.maxValue = (float) _lengthOfVideoInFrames;
                 videoSlider.minValue = 0f;
 
                 // Setup CurrentVideoTime
@@ -202,7 +203,7 @@ namespace Video_Player_Scripts
                 
                 
                 // Setup TotalVideoTime
-                totalVideoTime.text = lengthOfVideoInFrames.ToString();
+                totalVideoTime.text = _lengthOfVideoInFrames.ToString();
                 
                 // Setup Sequence buttons
                 startSequenceButton.interactable = true;
@@ -399,7 +400,7 @@ namespace Video_Player_Scripts
                 
                 // Set Video player to ending of sequence
                 _videoPlayer.frame = _currentSequence.EndFrame;
-                videoSlider.value = (float) _currentSequence.EndFrame;
+                videoSlider.value = _currentSequence.EndFrame;
                 currentVideoTime.text = _currentSequence.EndFrame.ToString();
                 
                 // Setup buttons
@@ -474,67 +475,22 @@ namespace Video_Player_Scripts
                 Debug.Log("Output path is not set");
                 return;
             }
-
-            StartCoroutine(ExportSequencesCoroutine());
+            _ExportSequences();
         }
-
-        IEnumerator ExportSequencesCoroutine()
+        private void _ExportSequences()
         {
-            Dataset dataset = new Dataset(_videoPath, _outputPath);
-            
-            float frameRate = _videoPlayer.frameRate;
-            
-            int framesPerSecond = int.Parse(numberOfFramesField.text);
-
-            float frameIncrease = (frameRate / framesPerSecond);
-
-            foreach(Sequence sequence in _sequences)
-            {
-                List<byte[]> frames = new List<byte[]>();
-                long startFrame = sequence.StartFrame;
-                long endFrame = sequence.EndFrame;
-                Debug.Log("Extracting textures between: " 
-                          + startFrame
-                          + " and " 
-                          + endFrame);
-                while (startFrame <= endFrame)
-                {
-                    // Move Video Player to desired frame
-                    _videoPlayer.frame = startFrame;
-                    _videoPlayer.Prepare();
-                    yield return new WaitForSeconds(1);
-                    
-                    Debug.Log("Getting texture at frame " + _videoPlayer.frame + " / time " + TimeSpan.FromSeconds(_videoPlayer.time).ToString(@"mm\:ss"));
-                    
-                    // Extract the image as bytes
-                    RenderTexture renderTexture = (RenderTexture) _videoPlayer.texture;
-                    Texture2D textureToSave = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
-                    RenderTexture.active = renderTexture;
-                    textureToSave.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-                    textureToSave.Apply();
-                    byte[] bytes = textureToSave.EncodeToPNG();
-                    
-                    // Add the image in the list of frames
-                    frames.Add(bytes);
-                    
-                    // Update the UI to visually see the progress
-                    image.texture = _videoPlayer.texture;
-                    startFrame += (long) Math.Floor(frameIncrease);
-                }
-                dataset.AddData(frames.ToArray(), sequence.IsCorrect ? Category.Correct : Category.Wrong);
-            }
-            
-            dataset.SaveDataset();
             LightWeightOpenPoseHandler handler = exportMenu.GetComponent<LightWeightOpenPoseHandler>();
-            handler.inputDataset = dataset;
-            handler.ExportPosePicture = exportPosePictureToggle.isOn;
+            handler.videoInputPath = _videoPath;
+            handler.sequences = new List<Sequence>(_sequences);
+            handler.lengthOfVideoInFrames = (long) _lengthOfVideoInFrames;
+            handler.outputPath = _outputPath;
+            handler.exportPosePicture = exportOutputAsContent.isOn;
             exportMenu.SetActive(true);
             if (handler.stateText.text.Equals(OPState.Ready.ToString()))
             {
                 handler.ApplyChanges();
             }
             gameObject.SetActive(false);
-
         }
         
     }
