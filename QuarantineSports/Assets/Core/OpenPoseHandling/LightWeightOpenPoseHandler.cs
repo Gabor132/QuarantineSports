@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Core.DatasetObjects;
@@ -225,25 +226,26 @@ namespace Core.OpenPoseHandling
             // Update state in UI
             stateText.text = OPWrapper.state.ToString();
 
-            long currentFrame = (long) _datum.frameNumber;
-            if (_currentSequence != null)
-            {
-                if (currentFrame > _currentSequence.EndFrame)
-                {
-                    if (sequences.Count > 0)
-                    {
-                        _currentSequence = sequences[0];
-                        sequences.Remove(_currentSequence);
-                    }
-                    else
-                    {
-                        _currentSequence = null;
-                    }
-                }
-            }
-            
             // Try getting new frame
             if (OPWrapper.OPGetOutput(out _datum)){ // true: has new frame data
+                
+                long currentFrame = (long) _datum.frameNumber;
+                Debug.Log($"Current frame: {currentFrame}");
+                if (_currentSequence != null)
+                {
+                    if (currentFrame > _currentSequence.EndFrame)
+                    {
+                        if (sequences.Count > 0)
+                        {
+                            _currentSequence = sequences[0];
+                            sequences.Remove(_currentSequence);
+                        }
+                        else
+                        {
+                            _currentSequence = null;
+                        }
+                    }
+                }
                 
                 image.UpdateImage(_datum.cvInputData);
                 int category = 0;
