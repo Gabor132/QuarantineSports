@@ -479,7 +479,7 @@ namespace Video_Player_Scripts
         }
         private void _ExportSequences()
         {
-            LightWeightOpenPoseHandler handler = exportMenu.GetComponent<LightWeightOpenPoseHandler>();
+            VideoAnnotationOpenPoseHandler handler = exportMenu.GetComponent<VideoAnnotationOpenPoseHandler>();
             handler.videoInputPath = _videoPath;
             handler.sequences = new List<Sequence>(_sequences);
             handler.lengthOfVideoInFrames = (long) _lengthOfVideoInFrames;

@@ -19,7 +19,7 @@ namespace Core.OpenPoseHandling
      * This class is made to extract the OpenPose Keypoints locations upon extracing of images for the dataset and
      * create the dataset needed for training the classifier
      */
-    public class LightWeightOpenPoseHandler : MonoBehaviour
+    public class VideoAnnotationOpenPoseHandler : MonoBehaviour
     {
 
         // UI elements
