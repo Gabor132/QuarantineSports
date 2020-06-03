@@ -52,8 +52,6 @@ namespace Video_Player_Scripts
         public GameObject playButton;
         public GameObject pauseButton;
         public Button startSequenceButton;
-        public Button correctSequenceButton;
-        public Button wrongSequenceButton;
         public Button endSequenceButton;
         public Button discardSequenceButton;
         public Slider videoSlider;
@@ -63,6 +61,7 @@ namespace Video_Player_Scripts
         public Dropdown sequencesDropdown;
         public Text sequenceCurrentText;
         public Toggle exportOutputAsContent;
+        public Dropdown sequenceCategoryDropdown;
         
         /*
          * Auxiliar Variables
@@ -119,6 +118,26 @@ namespace Video_Player_Scripts
             playButton.SetActive(true);
             pauseButton.SetActive(false);
             _videoPlayer.Stop();
+        }
+
+        public void GoToNextFrame()
+        {
+            PausePlaying();
+            long newFrame = _videoPlayer.frame + 1L;
+            _videoPlayer.frame = newFrame;
+            currentVideoTime.text = newFrame.ToString();
+            UpdateCurrentSequence(newFrame);
+            UpdateTexture();
+        }
+
+        public void GoToPreviousFrame()
+        {
+            PausePlaying();
+            long newFrame = _videoPlayer.frame - 1L;
+            _videoPlayer.frame = newFrame;
+            currentVideoTime.text = newFrame.ToString();
+            UpdateCurrentSequence(newFrame);
+            UpdateTexture();
         }
         public void ApplySliderChange(bool fromUi = false)
         {
@@ -207,6 +226,10 @@ namespace Video_Player_Scripts
                 
                 // Setup Sequence buttons
                 startSequenceButton.interactable = true;
+                endSequenceButton.interactable = false;
+                discardSequenceButton.interactable = false;
+                // Annotation category dropdown
+                sequenceCategoryDropdown.interactable = false;
 
                 // Setup Sequence Text
                 sequenceCurrentText.text = _defaultSequenceTextEmpty;
@@ -248,7 +271,7 @@ namespace Video_Player_Scripts
             {
                 _currentSequence.EndFrame = newFrame;
                 sequenceCurrentText.text = string.Format(_defaultSequenceTextFormat, _currentSequence.Id, _currentSequence.StartFrame,
-                    _currentSequence.EndFrame, _currentSequence.IsCorrect ? "Correct" : "Wrong");
+                    _currentSequence.EndFrame, _currentSequence.Category);
             }
             else
             {
@@ -275,30 +298,13 @@ namespace Video_Player_Scripts
             // Setup buttons
             startSequenceButton.interactable = false;
             endSequenceButton.interactable = true;
-            correctSequenceButton.interactable = true;
-            wrongSequenceButton.interactable = false;
             discardSequenceButton.interactable = true;
             
             // Setup Dropdown
             sequencesDropdown.interactable = false;
+            sequenceCategoryDropdown.interactable = true;
             
             UpdateCurrentSequence(newFrame);
-        }
-        public void SetSequence(bool isCorrect)
-        {
-            Debug.Log("Setting sequence to " + isCorrect);
-            if (_currentSequence == null)
-            {
-                Debug.Log("Must first start a sequence");
-                return;
-            }
-            _currentSequence.IsCorrect = isCorrect;
-            
-            // Setup buttons
-            correctSequenceButton.interactable = ! isCorrect;
-            wrongSequenceButton.interactable = isCorrect;
-            
-            UpdateCurrentSequence(_videoPlayer.frame);
         }
         public void SaveSequence()
         {
@@ -327,12 +333,11 @@ namespace Video_Player_Scripts
             // Setup buttons
             startSequenceButton.interactable = true;
             endSequenceButton.interactable = false;
-            correctSequenceButton.interactable = false;
-            wrongSequenceButton.interactable = false;
             discardSequenceButton.interactable = false;
             
             // Setup Dropdown
             sequencesDropdown.interactable = true;
+            sequenceCategoryDropdown.interactable = false;
             
             // Set dropdown to None
             sequencesDropdown.value = 0;
@@ -356,18 +361,42 @@ namespace Video_Player_Scripts
             // Setup buttons
             startSequenceButton.interactable = true;
             endSequenceButton.interactable = false;
-            correctSequenceButton.interactable = false;
-            wrongSequenceButton.interactable = false;
             discardSequenceButton.interactable = false;
             
             // Setup Dropdown
             sequencesDropdown.interactable = true;
+            sequenceCategoryDropdown.interactable = false;
             
             // Set dropdown to None
             sequencesDropdown.value = 0;
             
             UpdateCurrentSequence(_videoPlayer.frame);
         }
+        public void UpdateSequenceCategory()
+        {
+            if (_currentSequence != null)
+            {
+                Dropdown.OptionData option = sequenceCategoryDropdown.options[sequenceCategoryDropdown.value]; 
+                Category desiredCategory;
+                if (Enum.TryParse(option.text, out desiredCategory))
+                {
+                    SetSequenceCategory(desiredCategory);
+                }
+            }
+        }
+
+        public void SetSequenceCategory(Category category)
+        {
+            Debug.Log("Setting individual frame sequence to " + category);
+            if (_currentSequence == null)
+            {
+                Debug.Log("Must first start a sequence");
+                return;
+            }
+            _currentSequence.Category = category;
+            UpdateCurrentSequence(_videoPlayer.frame);
+        }
+
         public void SelectSequence()
         {
             PausePlaying();
@@ -406,13 +435,27 @@ namespace Video_Player_Scripts
                 // Setup buttons
                 startSequenceButton.interactable = false;
                 endSequenceButton.interactable = true;
-                correctSequenceButton.interactable = ! _currentSequence.IsCorrect;
-                wrongSequenceButton.interactable = _currentSequence.IsCorrect;
                 discardSequenceButton.interactable = true;
+                sequenceCategoryDropdown.interactable = true;
+                //
+                // Set IndividualFrameDropdown existing value
+                //
+                Dropdown.OptionData categoryOption =
+                    sequenceCategoryDropdown.options.Find(data =>
+                        data.text.Equals(_currentSequence.Category.ToString()));
+                if (categoryOption == null)
+                {
+                    Debug.LogError("Unknown category!");
+                }
+                else
+                {
+                    sequenceCategoryDropdown.value =
+                        sequenceCategoryDropdown.options.IndexOf(categoryOption);
+                }
                 
                 // Set Current Sequence Text
                 sequenceCurrentText.text = string.Format(_defaultSequenceTextFormat, _currentSequence.Id, _currentSequence.StartFrame,
-                    _currentSequence.EndFrame, _currentSequence.IsCorrect ? "Correct" : "Wrong");
+                    _currentSequence.EndFrame, _currentSequence.Category);
             }
             else
             {
@@ -424,10 +467,8 @@ namespace Video_Player_Scripts
                 // Setup buttons
                 startSequenceButton.interactable = true;
                 endSequenceButton.interactable = false;
-                correctSequenceButton.interactable = false;
-                wrongSequenceButton.interactable = false;
                 discardSequenceButton.interactable = false;
-                
+                sequenceCategoryDropdown.interactable = false;
             }
             
             UpdateTexture();
@@ -436,26 +477,26 @@ namespace Video_Player_Scripts
         {
             public long StartFrame { get; set; }
             public long EndFrame { get; set; }
-            public bool IsCorrect { get; set; }
+            public Category Category { get; set; }
 
             public int Id { get; set; }
 
-            public static int NextId = 0;
+            public static int nextId = 0;
 
             public Sequence()
             {
                 StartFrame = 0;
                 EndFrame = 0;
-                Id = NextId;
-                NextId++;
+                Id = nextId;
+                nextId++;
             }
             
             public Sequence(long startFrame)
             {
                 StartFrame = startFrame;
                 EndFrame = startFrame;
-                Id = NextId;
-                NextId++;
+                Id = nextId;
+                nextId++;
             }
 
             public string GetSequenceText()

@@ -1178,7 +1178,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 100
+  orthographic size: 1
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1872,6 +1872,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modelPath: ./Assets/StreamingAssets/our_model/
   okHandler: {fileID: 486773602}
+  modelSource: {fileID: 0}
 --- !u!224 &2032729917
 RectTransform:
   m_ObjectHideFlags: 0

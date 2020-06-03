@@ -14,7 +14,7 @@ namespace Core.DatasetObjects
             {
                 for (int i = 0; i < 25; i++)
                 {
-                    // The first 25*3 keypoints belong to the first person
+                    // The first 25 * 3 keypoints belong to the first person
                     Keypoints = keypoints.GetRange(0, 25 * 3);
                 }
             }

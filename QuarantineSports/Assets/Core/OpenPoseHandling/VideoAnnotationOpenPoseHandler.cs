@@ -251,7 +251,7 @@ namespace Core.OpenPoseHandling
                 int category = 0;
                 if (_currentSequence != null && currentFrame >= _currentSequence.StartFrame && currentFrame <= _currentSequence.EndFrame)
                 {
-                    category = _currentSequence.IsCorrect ? 1 : 0;
+                    category = (int) _currentSequence.Category;
                 }
                 _output.Add(new Frame(_datum.poseKeypoints, category));
                 if (_datum.poseKeypoints != null)

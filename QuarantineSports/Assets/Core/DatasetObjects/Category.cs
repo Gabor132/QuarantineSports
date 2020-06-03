@@ -2,7 +2,9 @@
 {
     public enum Category
     {
-        Wrong = 0,
-        Correct = 1
+        Nothing = 0,
+        PushUpMiddle = 1,
+        PushUpHigh = 2,
+        PushUpLow = 3,
     }
 }
