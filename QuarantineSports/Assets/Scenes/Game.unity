@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openPoseHandler: {fileID: 978578696}
-  kerasHandler: {fileID: 2032729916}
+  onnxHandler: {fileID: 2032729916}
   timeLeftText: {fileID: 1796880009}
 --- !u!224 &486773603
 RectTransform:
@@ -457,7 +457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timerText: {fileID: 1411610419}
-  OpenPoseKerasScene: {fileID: 486773602}
+  openPoseOnnxScene: {fileID: 486773602}
 --- !u!1 &859378278
 GameObject:
   m_ObjectHideFlags: 0
@@ -1852,7 +1852,7 @@ GameObject:
   - component: {fileID: 2032729917}
   - component: {fileID: 2032729916}
   m_Layer: 5
-  m_Name: KerasHandler
+  m_Name: OnnxHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1870,9 +1870,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5043de1fe04dda74a8b8be66bd0b3d12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelPath: ./Assets/StreamingAssets/our_model/
-  okHandler: {fileID: 486773602}
-  modelSource: {fileID: 0}
+  openPoseOnnxHandler: {fileID: 486773602}
+  modelPath: 0
 --- !u!224 &2032729917
 RectTransform:
   m_ObjectHideFlags: 0
