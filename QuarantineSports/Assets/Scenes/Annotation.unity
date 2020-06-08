@@ -136,7 +136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &60125008
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3863,7 +3863,7 @@ MonoBehaviour:
   exportPosePicture: 0
   maxPeople: -1
   renderThreshold: 0.05
-  netResolution: {x: -1, y: 368}
+  netResolution: {x: -1, y: 80}
   handResolution: {x: 368, y: 368}
   faceResolution: {x: 368, y: 368}
 --- !u!114 &813279597

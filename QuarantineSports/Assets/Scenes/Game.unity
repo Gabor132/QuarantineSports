@@ -236,6 +236,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1796880011}
+        m_MethodName: StartCountdown
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &127919885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,9 +312,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 936b4f5dd6610464994e74c41472418f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openPoseHandler: {fileID: 978578696}
-  kerasHandler: {fileID: 2032729916}
-  timeLeftText: {fileID: 1796880009}
 --- !u!224 &486773603
 RectTransform:
   m_ObjectHideFlags: 0
@@ -315,6 +323,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1824311552}
   - {fileID: 1796880008}
   - {fileID: 978578693}
   - {fileID: 2032729917}
@@ -456,8 +465,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98351b6b68b45334583170528a0615e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerText: {fileID: 1411610419}
-  OpenPoseKerasScene: {fileID: 486773602}
 --- !u!1 &859378278
 GameObject:
   m_ObjectHideFlags: 0
@@ -471,7 +478,7 @@ GameObject:
   - component: {fileID: 859378281}
   - component: {fileID: 859378280}
   m_Layer: 5
-  m_Name: PlusButton
+  m_Name: MinusButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -540,8 +547,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 611574963}
-        m_MethodName: SubstractSeconds
+      - m_Target: {fileID: 1796880011}
+        m_MethodName: DecreaseTimer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -698,7 +705,7 @@ RectTransform:
   - {fileID: 1581633919}
   - {fileID: 1396414071}
   m_Father: {fileID: 486773603}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -753,14 +760,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9750c87dd914ab5af1f5e621c939e1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateText: {fileID: 1396414072}
-  image: {fileID: 1581633922}
-  okHandler: {fileID: 486773602}
-  maxPeople: 1
-  renderThreshold: 0.05
-  netResolution: {x: -1, y: 368}
-  handResolution: {x: 368, y: 368}
-  faceResolution: {x: 368, y: 368}
 --- !u!114 &978578697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -995,7 +994,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Timer: {0}'
+  m_Text: 'Timer: 30'
 --- !u!222 &1411610420
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1086,8 +1085,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 611574963}
-        m_MethodName: AddSeconds
+      - m_Target: {fileID: 1796880011}
+        m_MethodName: IncreaseTimer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1645,9 +1644,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1796880008}
   - component: {fileID: 1796880010}
+  - component: {fileID: 1796880011}
   - component: {fileID: 1796880009}
   m_Layer: 5
-  m_Name: TimeLeftText
+  m_Name: Timer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1665,7 +1665,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 486773603}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1712,6 +1712,100 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1796880007}
   m_CullTransparentMesh: 0
+--- !u!114 &1796880011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796880007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c23e43c40f71741a5e06e24ed8b981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  countDownLength: 5
+  countdownText: {fileID: 1824311550}
+  timerLength: 30
+  timerText: {fileID: 1796880009}
+  setupTimerText: {fileID: 1411610419}
+--- !u!1 &1824311549
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1824311552}
+  - component: {fileID: 1824311551}
+  - component: {fileID: 1824311550}
+  m_Layer: 0
+  m_Name: CountdownText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1824311550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824311549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 64
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 6
+    m_MaxSize: 64
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Countdown
+--- !u!222 &1824311551
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824311549}
+  m_CullTransparentMesh: 0
+--- !u!224 &1824311552
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824311549}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 486773603}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 200, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1983375429
 GameObject:
   m_ObjectHideFlags: 0
@@ -1870,9 +1964,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5043de1fe04dda74a8b8be66bd0b3d12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelPath: ./Assets/StreamingAssets/our_model/
-  okHandler: {fileID: 486773602}
-  modelSource: {fileID: 0}
 --- !u!224 &2032729917
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1885,7 +1976,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 486773603}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
