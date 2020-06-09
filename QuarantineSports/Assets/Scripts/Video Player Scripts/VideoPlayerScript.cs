@@ -522,6 +522,7 @@ namespace Video_Player_Scripts
         {
             VideoAnnotationOpenPoseHandler handler = exportMenu.GetComponent<VideoAnnotationOpenPoseHandler>();
             handler.videoInputPath = _videoPath;
+            Debug.Log(_videoPath);
             handler.sequences = new List<Sequence>(_sequences);
             handler.lengthOfVideoInFrames = (long) _lengthOfVideoInFrames;
             handler.outputPath = _outputPath;
@@ -529,6 +530,7 @@ namespace Video_Player_Scripts
             exportMenu.SetActive(true);
             if (handler.stateText.text.Equals(OPState.Ready.ToString()))
             {
+                Debug.Log("apply changes called");
                 handler.ApplyChanges();
             }
             gameObject.SetActive(false);
