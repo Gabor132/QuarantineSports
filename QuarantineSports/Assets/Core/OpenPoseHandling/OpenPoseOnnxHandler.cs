@@ -11,16 +11,15 @@ namespace Core.OpenPoseHandling
     public class OpenPoseOnnxHandler : MonoBehaviour
     {
 
-        private List<Frame> _frames = new List<Frame>();
         public WebcamOpenPoseHandler openPoseHandler;
         public OnnxHandler onnxHandler;
-
-        public TimeSpan timeLeft;
-
+        
         public Text timeLeftText;
+        public TimeSpan timeLeft;
 
         private float _passedTime = 0.0f;
         private float _startOfTimer = 0.0f;
+        private readonly List<Frame> _frames = new List<Frame>();
 
         private void _setTimeLeftText()
         {
@@ -40,16 +39,14 @@ namespace Core.OpenPoseHandling
             _setTimeLeftText();
             openPoseHandler.gameObject.SetActive(true);
             onnxHandler.gameObject.SetActive(true);
-            onnxHandler.StartOnnx();
             _startOfTimer = Time.time;
         }
-
-        // Update is called once per frame
+        
         void Update()
         {
-            if (! timeLeft.Equals(TimeSpan.Zero))
+            if (! timeLeft.Equals(TimeSpan.Zero) && onnxHandler.isStarted && openPoseHandler.IsStarted())
             {
-                _passedTime += Time.deltaTime - _startOfTimer;
+                _passedTime += Time.deltaTime;
                 if (_passedTime >= 1)
                 {
                     _passedTime = 0.0f;
@@ -57,80 +54,46 @@ namespace Core.OpenPoseHandling
                 }
                 _setTimeLeftText();
             }
+            else if(onnxHandler.isStarted && ! HasFrames())
+            {
+                Debug.Log("Timer finished");
+                openPoseHandler.StopOpenPose();
+                onnxHandler.StopOnnx();
+            }
         }
 
-        public void Stop()
-        {
-            openPoseHandler.StopOpenPose();
-            openPoseHandler.gameObject.SetActive(false);
-            onnxHandler.StopOnnx();
-        }
-
-        /**
-         * 
-         */
-        private void StartKeras()
-        {
-            StartCoroutine(OpenPoseKerasIntegration());
-        }
-
-        /**
-         * 
-         */
         public void WriteFrame(Frame newFrame)
         {
             lock (_frames)
             {
                 _frames.Add(newFrame);
-                if (_frames.Count >= 15)
-                {
-                    StartKeras();
-                }
             }
         }
         
-        /**
-         * 
-         */
         public void WriteFrames(List<Frame> newFrames)
         {
             lock (_frames)
             {
                 _frames.AddRange(newFrames);
-                if (_frames.Count >= 15)
-                {
-                    StartKeras();
-                }
             }
         }
 
-        /**
-         * 
-         */
         public List<Frame> ReadFrame(int count)
         {
             List<Frame> readFrames = new List<Frame>();
             lock (_frames)
             {
                 readFrames.AddRange(_frames.GetRange(0, count));
+                _frames.RemoveRange(0,count);
             }
-
             return readFrames;
         }
-        
-        /**
-         * 
-         */
-        IEnumerator OpenPoseKerasIntegration()
-        {
-            if (! timeLeft.Equals(TimeSpan.Zero))
-            {
-                yield return null;
-            }
 
+        public bool HasFrames()
+        {
             lock (_frames)
             {
-                onnxHandler.StartOnnx();
+                return _frames.Count > 0;
             }
         }
     }

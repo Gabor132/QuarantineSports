@@ -13,7 +13,7 @@ namespace Menu_Scripts
          */
         public Text timerText;
 
-        private TimeSpan timer;
+        private TimeSpan _timer;
 
         private string defaultTimerText = "Timer {0}";
 
@@ -21,13 +21,13 @@ namespace Menu_Scripts
 
         private void _setTimerText()
         {
-            timerText.text = string.Format(defaultTimerText, timer.ToString());
+            timerText.text = string.Format(defaultTimerText, _timer.ToString());
         }
         // Start is called before the first frame update
         void Start()
         {
-            timer = TimeSpan.Zero;
-            timer = timer.Add(TimeSpan.FromMinutes(1));
+            _timer = TimeSpan.Zero;
+            _timer = _timer.Add(TimeSpan.FromSeconds(2));
             _setTimerText();
         }
 
@@ -39,20 +39,20 @@ namespace Menu_Scripts
 
         public void AddSeconds()
         {
-            timer = timer.Add(TimeSpan.FromSeconds(30));
+            _timer = _timer.Add(TimeSpan.FromSeconds(10));
             _setTimerText();
         }
         
         
         public void SubstractSeconds()
         {
-            timer = timer.Subtract(TimeSpan.FromSeconds(30));
+            _timer = _timer.Subtract(TimeSpan.FromSeconds(10));
             _setTimerText();
         }
 
-        public void StartTimer()
+        public void SetTimer()
         {
-            openPoseOnnxScene.timeLeft = new TimeSpan(timer.Hours, timer.Minutes, timer.Seconds);
+            openPoseOnnxScene.timeLeft = new TimeSpan(_timer.Hours, _timer.Minutes, _timer.Seconds);
         }
     }
 }

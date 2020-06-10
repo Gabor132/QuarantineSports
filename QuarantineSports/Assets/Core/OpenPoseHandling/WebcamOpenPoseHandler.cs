@@ -180,6 +180,11 @@ namespace Core.OpenPoseHandling
                 /* profileSpeed */ 1000);
         }
 
+        public bool IsStarted()
+        {
+            return OPWrapper.state == OPState.Running;
+        }
+
         private IEnumerator UserRebootOpenPoseCoroutine() {
             if (OPWrapper.state == OPState.None) yield break;
             // Shutdown if running
@@ -201,10 +206,6 @@ namespace Core.OpenPoseHandling
 
             // Try getting new frame
             if (OPWrapper.OPGetOutput(out _datum)){ // true: has new frame data
-                
-                long currentFrame = (long) _datum.frameNumber;
-                Debug.Log($"Current frame: {currentFrame}");
-                
                 image.UpdateImage(_datum.cvInputData);
                 
                 Frame newFrame = new Frame(_datum.poseKeypoints, 0);
