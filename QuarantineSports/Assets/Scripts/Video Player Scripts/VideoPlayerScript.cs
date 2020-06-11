@@ -126,8 +126,11 @@ namespace Video_Player_Scripts
             long newFrame = _videoPlayer.frame + 1L;
             _videoPlayer.frame = newFrame;
             currentVideoTime.text = newFrame.ToString();
+            Debug.Log($"Setting the video at frame: {newFrame}");
             UpdateCurrentSequence(newFrame);
             UpdateTexture();
+            StartPlaying();
+            PausePlaying();
         }
 
         public void GoToPreviousFrame()
@@ -136,8 +139,11 @@ namespace Video_Player_Scripts
             long newFrame = _videoPlayer.frame - 1L;
             _videoPlayer.frame = newFrame;
             currentVideoTime.text = newFrame.ToString();
+            Debug.Log($"Setting the video at frame: {newFrame}");
             UpdateCurrentSequence(newFrame);
             UpdateTexture();
+            StartPlaying();
+            PausePlaying();
         }
         public void ApplySliderChange(bool fromUi = false)
         {
@@ -244,7 +250,6 @@ namespace Video_Player_Scripts
             }
 
         }
-
 
         /*
          * Update Logic
