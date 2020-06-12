@@ -27,7 +27,7 @@ namespace Menu_Scripts
         void Start()
         {
             _timer = TimeSpan.Zero;
-            _timer = _timer.Add(TimeSpan.FromSeconds(2));
+            _timer = _timer.Add(TimeSpan.FromSeconds(30));
             _setTimerText();
         }
 

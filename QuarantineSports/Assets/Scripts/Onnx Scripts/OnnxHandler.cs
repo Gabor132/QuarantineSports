@@ -15,8 +15,14 @@ namespace Onnx_Scripts
         public NNModel loadedModel;
         public bool isStarted = false;
         public Text outputText;
+        public Text counterText;
+        public float probabiltyThreshold = 0.8f;
+
+        private int _lastCategory = -1;
+        private int _nrOfPushups = 0;
 
         private string _defaultOutputTextFormat = "Frame was: {0}/ Value: {1}";
+        private string _defaultCountetTextFormat = "Counter: {0}";
         
         private Model _runtimeModel;
         private IWorker _worker;
@@ -60,12 +66,41 @@ namespace Onnx_Scripts
             }
         }
 
+        private void SetCounterText()
+        {
+            counterText.text = string.Format(_defaultCountetTextFormat, _nrOfPushups);
+        }
+
+        private void CountPushups(float[] classification)
+        {
+            int newClass = (int) classification[0];
+            float probabilty = classification[1];
+            if (probabilty < 0.8)
+            {
+                return;
+            }
+
+            if (newClass == 2 && _lastCategory == 3 || newClass == 3 && _lastCategory == 2)
+            {
+                _nrOfPushups++;
+                SetCounterText();
+                _lastCategory = newClass;
+                Debug.Log("Counted a new pushup");
+            }
+
+            if (newClass == 3 || newClass == 2)
+            {
+                _lastCategory = newClass;
+            }
+            
+        }
+
         private void ProcessNextFrame()
         {
             var frames = openPoseOnnxHandler.ReadFrame(1);
             foreach (var frame in frames.Where(frame => frame.Keypoints != null && frame.Keypoints.Count != 0))
             {
-                _input = frame.GetAsTensor();
+                _input = frame.GetAsTensor(new TensorShape(_runtimeModel.inputs[0].shape));
                 try
                 {
                     _worker.SetInput(_input);
@@ -73,6 +108,7 @@ namespace Onnx_Scripts
                     _output = _worker.CopyOutput();
                     float[] classification = GetClassification(_output);
                     SetOutputText(classification);
+                    CountPushups(classification);
                     _output.Dispose();
                 }
                 finally

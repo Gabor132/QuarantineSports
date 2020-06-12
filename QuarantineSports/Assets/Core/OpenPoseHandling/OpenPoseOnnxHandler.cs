@@ -18,7 +18,6 @@ namespace Core.OpenPoseHandling
         public TimeSpan timeLeft;
 
         private float _passedTime = 0.0f;
-        private float _startOfTimer = 0.0f;
         private readonly List<Frame> _frames = new List<Frame>();
 
         private void _setTimeLeftText()
@@ -39,7 +38,6 @@ namespace Core.OpenPoseHandling
             _setTimeLeftText();
             openPoseHandler.gameObject.SetActive(true);
             onnxHandler.gameObject.SetActive(true);
-            _startOfTimer = Time.time;
         }
         
         void Update()

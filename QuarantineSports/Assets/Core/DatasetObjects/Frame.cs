@@ -22,14 +22,15 @@ namespace Core.DatasetObjects
             Category = category;
         }
 
-        public Tensor GetAsTensor()
+        public Tensor GetAsTensor(TensorShape inputShape)
         {
-            Tensor t = new Tensor(1,1,25,3);
-            for (var i = 0; i < 75; i += 3)
+            Tensor t = new Tensor(1, 25, 3 ,1);
+            for (var j = 0; j < 25; j++)
             {
-                t[0, 0, i / 3, 0] = Keypoints[i];
-                t[0, 0, i / 3, 1] = Keypoints[i+1];
-                t[0, 0, i / 3, 2] = Keypoints[i+2];
+                for (var i = 0; i < 3; i++)
+                {
+                    t[0, j, i, 0] = Keypoints[j*3 + i];
+                }
             }
             return t;
         }
