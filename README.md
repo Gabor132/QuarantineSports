@@ -2,7 +2,7 @@
 Visual Analysis of Human Motion Project
 
 
-# Current Setup (not the best)
+# Setup
 
 1. Clone the project.</br>
 2. The project won't work yet, don't panic.</br>
