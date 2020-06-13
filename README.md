@@ -22,3 +22,4 @@ Visual Analysis of Human Motion Project
 8. Add the "Runtime File Browser" Asset into the project from this <a href="https://github.com/yasirkula/UnitySimpleFileBrowser/releases/tag/v1.2.0">link</a></br>
 9. Go to Unity Package Manager and install Barracuda 1.0.0 then make sure that the model int Our_Models is assigned to the instance of OnnxHandler within the game scene.
 10. Everything should work now.
+11. If compiler error CS0234: "The type or namespace name 'Modules' does not exist" appears, uncomment line 5 in WebcamOpenPoseHandler.cs and line 7 in VideoAnnotationOpenPoseHandler.cs. (using OpenPose.Modules.Scripts;)
