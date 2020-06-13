@@ -4,6 +4,11 @@ using UnityEngine.UI;
 
 namespace Camera_Scripts
 {
+    /**Note: deprecated
+     * This class is used to access the webcam. 
+     * Grabs webcam frames and stores them onto WebcamTexture.
+     * Once all frames are handled, Mediaencoder is used to persist an mp4 video containing the webcam frames.
+     */
     public class CameraScript : MonoBehaviour
     {
         private bool _camAvailable;
@@ -16,10 +21,7 @@ namespace Camera_Scripts
         private string _filepath;
         private bool recording = false;
         private VideoTrackAttributes _videoTrackAttributes;
-        
-      
         Texture2D _currentTexture;
-
         public RawImage background;
         public AspectRatioFitter fit;
 
@@ -30,6 +32,8 @@ namespace Camera_Scripts
             
             _defaultBackground = background.texture;
             WebCamDevice[] devices = WebCamTexture.devices;
+
+            //Loop Over Cameras and use the last webcam, if it is front facing.
             if (devices.Length == 0)
             {
                 Debug.Log("No camera could be found");
@@ -49,15 +53,19 @@ namespace Camera_Scripts
                 Debug.Log("No front camera found");
                 return;
             }
+
+            //Startup Webcam and save texture onto the RawImage GameObject
             _frontCam.Play();
             background.texture = _frontCam;
 
 
-            
+            //Path for the finished mp4 file
             _filename = string.Format("TestVideo_{0}.mp4", System.DateTime.Now.ToFileTime());
             _filepath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), _filename);
             _filepath = _filepath.Replace("/", @"\");
 
+
+            //Setup the Video Attributes for the Media Encoder
             Debug.Log("setting up");
             _videoTrackAttributes = new VideoTrackAttributes();
             _videoTrackAttributes.width = (uint)_frontCam.width;
@@ -72,6 +80,12 @@ namespace Camera_Scripts
             Debug.Log("Camera is setup");
             _camAvailable = true;
         }
+
+
+        /**
+         * Update the webcam texture.
+         * Aspect Ratio is calculated, to fit the texture onto the canvas
+             */
 
         private void Update()
         {
@@ -95,6 +109,10 @@ namespace Camera_Scripts
             }
 
         }
+
+        /**
+         * Stop the Camera and dispose the video file, to persist it onto the harddrive
+         */
 
         public void StopCamera()
         {

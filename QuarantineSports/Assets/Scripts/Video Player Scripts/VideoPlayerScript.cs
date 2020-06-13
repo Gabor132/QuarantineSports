@@ -123,6 +123,7 @@ namespace Video_Player_Scripts
             _videoPlayer.Stop();
         }
 
+        //Pauses the video and jumps to the next Frame
         public void GoToNextFrame()
         {
             PausePlaying();
@@ -136,6 +137,7 @@ namespace Video_Player_Scripts
             PausePlaying();
         }
 
+        //Pauses the video and jumps to the previous Frame
         public void GoToPreviousFrame()
         {
             PausePlaying();
@@ -148,6 +150,8 @@ namespace Video_Player_Scripts
             StartPlaying();
             PausePlaying();
         }
+
+        
         public void ApplySliderChange(bool fromUi = false)
         {
             if (fromUi)
@@ -165,6 +169,8 @@ namespace Video_Player_Scripts
                 }
             }
         }
+
+
         public void ApplyInputFieldChange(bool fromUi = false)
         {
             if (fromUi)
@@ -314,6 +320,10 @@ namespace Video_Player_Scripts
             
             UpdateCurrentSequence(newFrame);
         }
+
+        /**
+         * Saves the currently active sequence
+         */
         public void SaveSequence()
         {
             Debug.Log("Ending Sequence");
@@ -352,6 +362,10 @@ namespace Video_Player_Scripts
             
             UpdateCurrentSequence(_videoPlayer.frame);
         }
+
+        /**
+         * Deletes an existing sequence
+         */
         public void DeleteSequence()
         {
             // Check if sequence was already saved
@@ -380,6 +394,10 @@ namespace Video_Player_Scripts
             
             UpdateCurrentSequence(_videoPlayer.frame);
         }
+
+        /**
+         * Updates the category from an existing sequence
+         */
         public void UpdateSequenceCategory()
         {
             if (_currentSequence != null)
@@ -393,6 +411,9 @@ namespace Video_Player_Scripts
             }
         }
 
+        /**
+         * Sets the chosen sequence for the active category
+         */
         public void SetSequenceCategory(Category category)
         {
             Debug.Log("Setting individual frame sequence to " + category);
@@ -405,6 +426,9 @@ namespace Video_Player_Scripts
             UpdateCurrentSequence(_videoPlayer.frame);
         }
 
+        /**
+         * Pauses the Video and shows dropdown menu to select a sequence
+         */
         public void SelectSequence()
         {
             PausePlaying();
@@ -481,6 +505,10 @@ namespace Video_Player_Scripts
             
             UpdateTexture();
         }
+
+        /**
+         * Class to represent a sequence of frame which can be annotated
+         */
         public class Sequence
         {
             public long StartFrame { get; set; }

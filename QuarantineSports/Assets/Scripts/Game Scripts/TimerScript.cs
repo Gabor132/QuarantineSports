@@ -15,24 +15,32 @@ namespace Game_Scripts
      */
     public class TimerScript : MonoBehaviour
     {
-    
-        public float countDownLength = 5f;
-        public Text countdownText;
-
-        public float timerLength = 30.0f;
+        //UI elements
         public Text timerText;
         public Text setupTimerText;
-
-
-        private float _currentTimer;
-        private bool _countdown = false;
-        private bool _timer = false;
-
+        public Text countdownText;
         public Text finalNumberOfPushUps;
 
+        //Length of the Countdown
+        public float countDownLength = 5f;
+        
+
+        //Length of the Timer, can be increased and decreased
+        public float timerLength = 30.0f;
+        
+
+        //Remaining length of the Timer
+        private float _currentTimer;
+
+        //boolean flag to indicate if countdown has started
+        private bool _countdown = false;
+        //boolean flag to indicate if timer has started
+        private bool _timer = false;
+
+        
+        //Unity References
         public OnnxHandler onnxHandler;
         public WebcamOpenPoseHandler webcamOpenPoseHandler;
-
         public GameObject setupMenu;
         public GameObject gameStatusTexts;
     
@@ -45,6 +53,9 @@ namespace Game_Scripts
             ResetFrames();
         }
 
+        /**
+         * Updates timer and countdown if they are active
+         */
         void Update()
         {
             if (_countdown)
@@ -83,13 +94,14 @@ namespace Game_Scripts
         }
 
 
-
+        //Start Countdown
         public void StartCountdown()
         {
             _countdown = true;
             PrepareProcessing();
         }
 
+        //Start Timer
         public void StartTimer()
         {
             timerText.enabled = true;
@@ -97,11 +109,16 @@ namespace Game_Scripts
             _currentTimer = timerLength;
         }
 
+
         public void PrepareProcessing()
         {
             webcamOpenPoseHandler.gameObject.SetActive(true);
         }
 
+        /**
+          * Start processing the video.
+          * Gets called once the timer starts.
+          */
         public void StartProcessing()
         {
             setupMenu.gameObject.SetActive(false);
@@ -110,6 +127,10 @@ namespace Game_Scripts
             onnxHandler.StartProcessing();
         }
 
+        /**
+          * Start processing the video.
+          * Gets called when the timer ends.
+          */
         public void StopProcessing()
         {
             webcamOpenPoseHandler.StopProcessing();
@@ -120,22 +141,28 @@ namespace Game_Scripts
             gameStatusTexts.gameObject.SetActive(false);
         }
 
+        //method to increase timer length
         public void IncreaseTimer()
         {
-            timerLength += 30.0f;
+            timerLength += 10.0f;
             setupTimerText.text = string.Format("Timer: {0}", timerLength);
 
         }
 
+        //method to decrease timer length
         public void DecreaseTimer()
         {
-            if (timerLength > 30.1f)
+            if (timerLength > 10.1f)
             {
-                timerLength -= 30.0f;
+                timerLength -= 10.0f;
                 setupTimerText.text = string.Format("Timer: {0}", timerLength);
             }    
         }
-    
+
+
+        /**
+         * Methods to handle the dataset frames.
+         */
         public void WriteFrame(Frame newFrame)
         {
             lock (_frames)
@@ -183,6 +210,7 @@ namespace Game_Scripts
         }
 
 
+        //Method to display the number of counted pushups
         private void SetNumberPushUpText(int count)
         {
             finalNumberOfPushUps.gameObject.SetActive(true);

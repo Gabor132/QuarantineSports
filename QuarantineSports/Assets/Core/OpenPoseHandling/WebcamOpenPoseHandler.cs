@@ -211,7 +211,7 @@ namespace Core.OpenPoseHandling
             _isProcessing = false;
         }
         
-
+        //Call Wrapper to shutdown OpenPose
         public void StopOpenPose()
         {
             OPWrapper.OPShutdown();

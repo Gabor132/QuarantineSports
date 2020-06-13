@@ -4,6 +4,10 @@ using Unity.Barracuda;
 
 namespace Core.DatasetObjects
 {
+
+    /** 
+     * Class to store Keypoints analyzed by Openpose
+     */
     public class Frame
     {
         public List<float> Keypoints;

@@ -11,20 +11,26 @@ namespace Onnx_Scripts
     
     public class OnnxHandler : MonoBehaviour
     {
-        
+        //References
         public TimerScript timerScript;
         public NNModel loadedModel;
+
+        //UI elements
         public Text outputText;
         public Text counterText;
-        // The threshold over which the category score must pass to consider the frame being that category
-        public float probabiltyThreshold = 0.8f;
-
-        private int _lastCategory = -1;
-        private int _nrOfPushups = 0;
-
         private string _defaultOutputTextFormat = "Frame was: {0}/ Value: {1}";
         private string _defaultCountetTextFormat = "Counter: {0}";
-        
+
+        // The threshold over which the category score must pass to consider the frame being that category
+        public float probabiltyThreshold = 0.8f;
+        //Category of last correct frame
+        private int _lastCategory = -1;
+        //Number of pushups counted
+        private int _nrOfPushups = 0;
+
+
+       
+        //Barracuda Objects
         private Model _runtimeModel;
         private IWorker _worker;
         private Tensor _input;

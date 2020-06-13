@@ -2,6 +2,7 @@
 
 namespace Menu_Scripts
 {
+    //Scene Indexes 
     public enum SceneIndexes
     {
         MainMenuScene = 0,

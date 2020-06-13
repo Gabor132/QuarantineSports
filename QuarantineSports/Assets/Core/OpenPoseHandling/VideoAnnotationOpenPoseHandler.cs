@@ -283,6 +283,7 @@ namespace Core.OpenPoseHandling
 
         public Dictionary<int, long> dimensions = new Dictionary<int, long>();
 
+        //Exports the annotated Sequences as a JSON file
         public void SaveOutput()
         {
             Debug.Log("Saving output as JSON");
@@ -294,6 +295,7 @@ namespace Core.OpenPoseHandling
             }
         }
 
+        //Shuts down the OpenPose framework
         public void Stop()
         {
             SaveOutput();

@@ -11,7 +11,9 @@ namespace Menu_Scripts
         public GameObject inputMenu;
         public GameObject annotationMenu;
 
+        //Input Path for the video to be annotated
         public InputField inputPath;
+        //Output Path for the rendered video
         public InputField outputPath;
 
         private void Start()
