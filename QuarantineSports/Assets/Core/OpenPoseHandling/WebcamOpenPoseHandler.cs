@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections;
 using Core.DatasetObjects;
-using Newtonsoft.Json;
+using Game_Scripts;
 using OpenPose;
 using OpenPose.Modules.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 using Video_Player_Scripts;
-using Formatting = Newtonsoft.Json.Formatting;
 using RenderMode = OpenPose.RenderMode;
 using ScaleMode = OpenPose.ScaleMode;
 
@@ -31,7 +27,7 @@ namespace Core.OpenPoseHandling
         // Image Output
         public ImageRenderer image;
 
-        public OpenPoseOnnxHandler okHandler;
+        public TimerScript timerScript;
 
         // OpenPose variables
         public int maxPeople = 1;
@@ -42,7 +38,7 @@ namespace Core.OpenPoseHandling
             handResolution = new Vector2Int(368, 368),
             faceResolution = new Vector2Int(368, 368);
 
-        
+        private bool _isProcessing = false;
         
         public void ApplyChanges(){
             // Restart OpenPose
@@ -180,11 +176,6 @@ namespace Core.OpenPoseHandling
                 /* profileSpeed */ 1000);
         }
 
-        public bool IsStarted()
-        {
-            return OPWrapper.state == OPState.Running;
-        }
-
         private IEnumerator UserRebootOpenPoseCoroutine() {
             if (OPWrapper.state == OPState.None) yield break;
             // Shutdown if running
@@ -208,11 +199,24 @@ namespace Core.OpenPoseHandling
             if (OPWrapper.OPGetOutput(out _datum)){ // true: has new frame data
                 image.UpdateImage(_datum.cvInputData);
                 
-                Frame newFrame = new Frame(_datum.poseKeypoints, 0);
-                
-                okHandler.WriteFrame(newFrame);
+                if (_isProcessing)
+                {
+                    Frame newFrame = new Frame(_datum.poseKeypoints, 0);
+                    timerScript.WriteFrame(newFrame);
+                }
             }
         }
+
+        public void StartProcessing()
+        {
+            _isProcessing = true;
+        }
+
+        public void StopProcessing()
+        {
+            _isProcessing = false;
+        }
+        
 
         public void StopOpenPose()
         {

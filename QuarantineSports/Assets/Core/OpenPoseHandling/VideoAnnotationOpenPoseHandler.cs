@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Core.DatasetObjects;
@@ -37,6 +36,7 @@ namespace Core.OpenPoseHandling
         public long lengthOfVideoInFrames;
         public string outputPath;
         public bool exportPosePicture = false;
+        public bool isAnnotated = true;
         
         // Auxiliar Variables
         private string _videoName;
@@ -63,7 +63,7 @@ namespace Core.OpenPoseHandling
         
         
         private void Start() {
-
+            Debug.Log("Start called");
             _output = new List<Frame>();
             
             // Extract Video name for exporting
@@ -93,7 +93,11 @@ namespace Core.OpenPoseHandling
             UserConfigureOpenPose();
 
             // Start OpenPose
-            OPWrapper.OPRun();
+            if (OPWrapper.state == OPState.Ready)
+            {
+                OPWrapper.OPRun();
+            }
+            
         }
 
         // Parameters can be set here
@@ -225,7 +229,7 @@ namespace Core.OpenPoseHandling
         private void Update() {
             // Update state in UI
             stateText.text = OPWrapper.state.ToString();
-
+            
             // Try getting new frame
             if (OPWrapper.OPGetOutput(out _datum)){ // true: has new frame data
                 
@@ -249,9 +253,14 @@ namespace Core.OpenPoseHandling
                 
                 image.UpdateImage(_datum.cvInputData);
                 int category = 0;
+                
                 if (_currentSequence != null && currentFrame >= _currentSequence.StartFrame && currentFrame <= _currentSequence.EndFrame)
                 {
                     category = (int) _currentSequence.Category;
+                }
+                if (!isAnnotated)
+                {
+                    category = -1;
                 }
                 _output.Add(new Frame(_datum.poseKeypoints, category));
                 if (_datum.poseKeypoints != null)
@@ -262,6 +271,14 @@ namespace Core.OpenPoseHandling
                     }
                 }
             }
+
+            //Debug.Log(stateText.text);
+            if (OPWrapper.state.Equals(OPState.Ready)&&!isAnnotated)
+            {
+                Debug.Log("finished");
+                Stop();
+            }
+         
         }
 
         public Dictionary<int, long> dimensions = new Dictionary<int, long>();
@@ -281,6 +298,12 @@ namespace Core.OpenPoseHandling
         {
             SaveOutput();
             OPWrapper.OPShutdown();
+            if (!isAnnotated)
+            {
+                gameObject.SetActive(false);
+            }
+            
+            
         }
     }
 }

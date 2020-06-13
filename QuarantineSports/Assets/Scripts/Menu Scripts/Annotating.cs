@@ -16,10 +16,11 @@ namespace Menu_Scripts
             // Setup Menus
             inputMenu.SetActive(true);
             annotationMenu.SetActive(false);
-        
+
             // Setup default Paths
-            inputPath.text = "C:\\Users\\Bg\\Desktop\\video.mp4";
-            outputPath.text = "C:\\Users\\Bg\\Desktop\\Output\\";
+            inputPath.text = "";
+
+            outputPath.text = "";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Core.OpenPoseHandling;
+using Game_Scripts;
 using Unity.Barracuda;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,9 +12,8 @@ namespace Onnx_Scripts
     public class OnnxHandler : MonoBehaviour
     {
         
-        public OpenPoseOnnxHandler openPoseOnnxHandler;
+        public TimerScript timerScript;
         public NNModel loadedModel;
-        public bool isStarted = false;
         public Text outputText;
         public Text counterText;
         public float probabiltyThreshold = 0.8f;
@@ -28,6 +28,7 @@ namespace Onnx_Scripts
         private IWorker _worker;
         private Tensor _input;
         private Tensor _output;
+        private bool _isProcessing = false;
 
         // Start is called before the first frame update
         private void Start()
@@ -35,7 +36,6 @@ namespace Onnx_Scripts
             Debug.Log("Starting ONNX");
             _runtimeModel = ModelLoader.Load(loadedModel);
             _worker = WorkerFactory.CreateComputeWorker( _runtimeModel);
-            isStarted = true;
             Debug.Log("ONNX Model Started");
             foreach (var layer in _runtimeModel.layers)
             {
@@ -50,7 +50,7 @@ namespace Onnx_Scripts
 
         private void OnDestroy()
         {
-            isStarted = false;
+            _isProcessing = false;
             Debug.Log("Stopping ONNX");
             _worker?.Dispose();
             _input?.Dispose();
@@ -58,9 +58,20 @@ namespace Onnx_Scripts
             Debug.Log("Stopped ONNX");
         }
 
+        public void StartProcessing()
+        {
+            _nrOfPushups = 0;
+            _isProcessing = true;
+        }
+
+        public void StopProcessing()
+        {
+            _isProcessing = true;
+        }
+
         private void Update()
         {
-            if (isStarted && openPoseOnnxHandler.HasFrames())
+            if (_isProcessing && timerScript.HasFrames())
             {
                 ProcessNextFrame();
             }
@@ -97,7 +108,7 @@ namespace Onnx_Scripts
 
         private void ProcessNextFrame()
         {
-            var frames = openPoseOnnxHandler.ReadFrame(1);
+            var frames = timerScript.ReadFrame(1);
             foreach (var frame in frames.Where(frame => frame.Keypoints != null && frame.Keypoints.Count != 0))
             {
                 _input = frame.GetAsTensor(new TensorShape(_runtimeModel.inputs[0].shape));
@@ -138,6 +149,11 @@ namespace Onnx_Scripts
         public void SetOutputText(float[] classification)
         {
             outputText.text = string.Format(_defaultOutputTextFormat, classification[0].ToString(), classification[1].ToString());
+        }
+
+        public int GetNrOfPushups()
+        {
+            return _nrOfPushups;
         }
     }
 }

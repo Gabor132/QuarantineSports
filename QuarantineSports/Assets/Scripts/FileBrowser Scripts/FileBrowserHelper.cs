@@ -40,7 +40,9 @@ namespace FileBrowser_Scripts
 			// Path: C:\Users
 			// Icon: default (folder icon)
 			FileBrowser.AddQuickLink( "Users", "C:\\Users", null );
+			FileBrowser.AddQuickLink("VideoOutput", "C:\\Users\\Paso\\Documents\\Uni\\QuarantineAnnotations", null);
 
+			
 			// Show a save file dialog 
 			// onSuccess event: not registered (which means this dialog is pretty useless)
 			// onCancel event: not registered
