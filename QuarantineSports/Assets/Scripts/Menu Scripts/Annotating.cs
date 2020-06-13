@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace Menu_Scripts
 {
+    /**
+     * Script used to initialize the Annotation Scene
+     */
     public class Annotating : MonoBehaviour
     {
         public GameObject inputMenu;

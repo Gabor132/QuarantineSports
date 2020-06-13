@@ -16,6 +16,7 @@ namespace Onnx_Scripts
         public NNModel loadedModel;
         public Text outputText;
         public Text counterText;
+        // The threshold over which the category score must pass to consider the frame being that category
         public float probabiltyThreshold = 0.8f;
 
         private int _lastCategory = -1;
@@ -82,6 +83,10 @@ namespace Onnx_Scripts
             counterText.text = string.Format(_defaultCountetTextFormat, _nrOfPushups);
         }
 
+        /**
+         * Function used to count the pushups using past detected categories
+         * We only care if we find frames of category 2 and 3 as those mark the existance of a push up
+         */
         private void CountPushups(float[] classification)
         {
             int newClass = (int) classification[0];
@@ -106,6 +111,10 @@ namespace Onnx_Scripts
             
         }
 
+        /**
+         * Function where the OnnxHandler extracts a frame from TimerScript, transforms it into Tensor format
+         * then using the ONNX model will extract the class to which the frame belongs to
+         */
         private void ProcessNextFrame()
         {
             var frames = timerScript.ReadFrame(1);
@@ -128,7 +137,10 @@ namespace Onnx_Scripts
                 }
             }
         }
-        
+        /**
+         * Transforms output tensor from model to an array containing the most probable class and it's score
+         * ex: [2, 0.87]
+         */
         public static float[] GetClassification(Tensor outputT)
         {
             float[] max = new float[2];
@@ -145,7 +157,7 @@ namespace Onnx_Scripts
             }
             return max;
         }
-
+        
         public void SetOutputText(float[] classification)
         {
             outputText.text = string.Format(_defaultOutputTextFormat, classification[0].ToString(), classification[1].ToString());

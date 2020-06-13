@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 namespace Menu_Scripts
 {
+    /**
+     * Main menu script for scene changes
+     */
     public class MainMenu : MonoBehaviour
     {
         public void SelectPlay()

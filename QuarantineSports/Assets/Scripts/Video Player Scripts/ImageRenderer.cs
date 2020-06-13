@@ -10,6 +10,7 @@ namespace Video_Player_Scripts
     /*
 	 * ImageRenderer renders the pure cvInputData to Texture2D
 	 * The texture is used as background image
+     * Extracted from the OpenPose demo
 	 */
     public class ImageRenderer : MonoBehaviour {
 

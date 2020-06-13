@@ -12,32 +12,26 @@ using ScaleMode = OpenPose.ScaleMode;
 namespace Core.OpenPoseHandling
 {
     /**
-     * This class is made to extract the OpenPose Keypoints locations upon extracing of images for the dataset and
-     * create the dataset needed for training the classifier
+     * This class is made to extract the OpenPose Keypoints locations from the Webcam feed and store them on the
+     * TrainScript object
      */
     public class WebcamOpenPoseHandler: MonoBehaviour
     {
 
         // UI elements
         public Text stateText;
-
-        // OpenPose Datum
-        private OPDatum _datum;
-        
         // Image Output
         public ImageRenderer image;
-
         public TimerScript timerScript;
-
         // OpenPose variables
         public int maxPeople = 1;
         public float renderThreshold = 0.05f;
-
         public Vector2Int
             netResolution = new Vector2Int(-1, 368),
             handResolution = new Vector2Int(368, 368),
             faceResolution = new Vector2Int(368, 368);
-
+        private OPDatum _datum;
+        
         private bool _isProcessing = false;
         
         public void ApplyChanges(){

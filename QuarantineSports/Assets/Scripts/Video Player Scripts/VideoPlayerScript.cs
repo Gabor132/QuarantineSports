@@ -11,6 +11,9 @@ using UnityEngine.Video;
 
 namespace Video_Player_Scripts
 {
+    /**
+     * Class Used for annotating the input videos
+     */
     public class VideoPlayerScript : MonoBehaviour
     {
         /*

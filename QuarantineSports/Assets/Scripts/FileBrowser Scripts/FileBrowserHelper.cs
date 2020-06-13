@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 namespace FileBrowser_Scripts
 {
+	/**
+	 * Class that wraps the FileBrowser library. Used for selecting the input video and output directory when annotating
+	 * the videos for training.
+	 */
 	[RequireComponent(typeof(InputField))]
 	public class FileBrowserHelper : MonoBehaviour
 	{

@@ -7,6 +7,12 @@ using UnityEngine.UI;
 
 namespace Game_Scripts
 {
+    /**
+     * Main Game Script class
+     * Stores all generated Frames from the WebcamOpenPoseHandler which are then used by the OnnxHandler
+     * Turns on the WebcamOpenPoseHandler and OnnxHandler to start processing the Frames
+     * Handles some UI settings
+     */
     public class TimerScript : MonoBehaviour
     {
     
@@ -31,8 +37,7 @@ namespace Game_Scripts
         public GameObject gameStatusTexts;
     
         private readonly List<Frame> _frames = new List<Frame>();
-    
-        // Start is called before the first frame update
+        
         void Start()
         {
             countDownLength = countDownLength + 0.49f;
@@ -40,7 +45,6 @@ namespace Game_Scripts
             ResetFrames();
         }
 
-        // Update is called once per frame
         void Update()
         {
             if (_countdown)
