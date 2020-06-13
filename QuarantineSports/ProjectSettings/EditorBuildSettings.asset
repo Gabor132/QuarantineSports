@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 826b8a5c75f498d4681d1b79091d6af0
   - enabled: 1
-    path: Assets/Scenes/Game.unity
+    path: Assets/Scenes/DragosGame.unity
     guid: e99660d178465a24eb45b7c312be64e4
   - enabled: 1
     path: Assets/Scenes/Camera.unity

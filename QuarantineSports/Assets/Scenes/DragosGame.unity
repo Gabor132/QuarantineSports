@@ -2027,7 +2027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openPoseOnnxHandler: {fileID: 486773602}
-  loadedModel: {fileID: 5022602860645237092, guid: 15d76c62d954e0d46be80dfb6428acdd,
+  loadedModel: {fileID: 5022602860645237092, guid: 36fc1c188cb45f8459266fb2879d2958,
     type: 3}
   isStarted: 0
   outputText: {fileID: 525756030}
