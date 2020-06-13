@@ -16,16 +16,9 @@ Visual Analysis of Human Motion Project
   a. StreamingAssets/\*</br>
   b. OpenPose/Modules/Scripts/\*</br>
   c. OpenPose/Plugins/\*</br>
-5. TextMesh Pro should be automatically imported by Unity, it will ask you. (or not, I just changed everything to use the normal unity assets...)</br>
-6. Download NuGet .unitypackage from <a href="https://github.com/GlitchEnzo/NuGetForUnity/releases">Link</a> and import the package in the project
-7. Restart the Unity Editor
-8. Use NuGet (it will have a tab now in the editor) to import Newtonsoft.Json
-9. Add the "Runtime File Browser" Asset into the project from this <a href="https://assetstore.unity.com/packages/tools/gui/runtime-file-browser-113006?_ga=2.235669572.49896998.1589205276-45063290.1585392890">link</a></br>
-9. Everything should work now.
-10. If not, oh god.
-
-
-
-# Querky Remarks
-Note to self and others: When adding a unity package, make sure the IDE or you don't add unnecessary and huge files in the commit. I learned it the hard way.
-*angry looking at the OpenPose package*
+5. Download NuGet .unitypackage from <a href="https://github.com/GlitchEnzo/NuGetForUnity/releases">Link</a> and import the package in the project
+6. Restart the Unity Editor
+7. Use NuGet (it will have a tab now in the editor) to import Newtonsoft.Json
+8. Add the "Runtime File Browser" Asset into the project from this <a href="https://assetstore.unity.com/packages/tools/gui/runtime-file-browser-113006?_ga=2.235669572.49896998.1589205276-45063290.1585392890">link</a></br>
+9. Go to Unity Package Manager and install Barracuda 1.0.0 then make sure that the model int Our_Models is assigned to the instance of OnnxHandler within the game scene.
+10. Everything should work now.
