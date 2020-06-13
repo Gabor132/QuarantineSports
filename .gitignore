@@ -91,3 +91,6 @@ crashlytics-build.properties
 /QuarantineSports/Assets/Packages
 Packages
 /QuarantineSports/Temp
+/QuarantineSports/Assets/MyPackage.nuspec
+/QuarantineSports/Logs/Packages-Update.log
+/QuarantineSports/ProjectSettings/BurstAotSettings_StandaloneWindows.json
